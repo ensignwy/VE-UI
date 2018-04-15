@@ -8,7 +8,7 @@
       <el-dropdown trigger="hover">
         <span class="el-dropdown-link">
           <img class="user-logo" src="../../../static/images/1.jpg" alt="">
-          你好,{{username}}images
+          你好,{{username}}
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item @click.native>修改密码</el-dropdown-item>

@@ -17,7 +17,7 @@
   import Bus from './bus'
 
   export default {
-    name: "SidebarLayout",
+    name: 'SidebarLayout',
     props:['menus'],
     data() {
       return {
