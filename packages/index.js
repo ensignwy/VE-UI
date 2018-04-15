@@ -1,8 +1,10 @@
 import EScroller from './scroller/index.js';
+import SidebarLayout from './sidebar-layout/index.js';
 
 
 const components = [
-  EScroller
+  EScroller,
+  SidebarLayout
 ]
 
 const install = function(Vue) {
@@ -16,5 +18,6 @@ if (typeof window !== 'undefined' && window.Vue) {
 
 export default {
   install,
-  EScroller
+  EScroller,
+  SidebarLayout
 }
