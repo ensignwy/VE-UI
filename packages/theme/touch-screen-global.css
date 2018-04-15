@@ -1,0 +1,249 @@
+input, textarea, select, button {
+  font-family: 'Microsoft YaHei', Arial, Helvetica, sans-serif;
+}
+
+/*小按钮*/
+.el-button--mini, .el-button--small {
+  font-size: 18px;
+  border-radius: 4px;
+}
+
+/*中按钮*/
+.el-button--medium {
+  padding: 0 0;
+  font-size: 20px;
+  border-radius: 4px;
+  width: 180px;
+  height: 54px;
+}
+
+/*大按钮*/
+.el-button--big {
+  padding: 0 0;
+  font-size: 24px;
+  border-radius: 4px;
+  width: 180px;
+  height: 70px;
+}
+
+/*图标按钮*/
+.el-button--icon {
+  border-radius: 4px;
+  padding: 0 15px;
+  height: 54px;
+  font-size: 20px;
+}
+
+.el-button [class*=el-icon-] + span {
+  margin-left: 12px;
+}
+
+/*标记按钮*/
+.el-badge__content {
+  border-radius: 16px;
+  font-size: 20px;
+  height: 26px;
+  line-height: 26px;
+  padding: 0 8px;
+}
+
+/*状态颜色*/
+.el-button--primary:focus, .el-button--primary:hover {
+  background: #2985e3;
+  border-color: #2985e3;
+  color: #fff;
+}
+
+/*文本按钮*/
+.el-button--text {
+  color: #409EFF;
+  background: 0 0;
+  padding-left: 0;
+  padding-right: 0;
+  font-size: 20px;
+}
+/*文本按钮(大)-使用加上class='text-big'*/
+.el-button--text.text-big{
+  font-size: 24px;
+}
+
+/*表单*/
+.el-input__inner {
+  height: 54px;
+  font-size: 20px;
+}
+
+.el-input.is-active .el-input__inner, .el-input__inner:focus, .el-textarea__inner:focus {
+  border-color: #409EFF;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+}
+
+.el-textarea {
+  font-size: 20px;
+}
+.el-form-item__label{
+  font-size: 20px;
+  padding: 0 40px 0 0;
+}
+
+
+/*提示信息*/
+.el-alert {
+  padding: 17px 15px;
+}
+.el-alert__icon,.el-alert__icon.is-big {
+  font-size: 22px;
+  width: 22px;
+  position: absolute;
+}
+.el-alert__icon{
+  top: 17px;
+}
+.el-alert__title {
+  font-size: 20px;
+  line-height: 20px;
+  display: inline-block;
+}
+
+.el-alert__content {
+  padding: 0 34px;
+}
+
+.el-alert--info {
+  background-color: #F3FAFF;
+  color: #409EFF;
+}
+.el-alert .el-alert__description {
+  font-size: 20px;
+  margin: 0;
+}
+.el-alert--info .el-alert__description{
+  color: #000000;
+}
+
+.el-alert__closebtn {
+  font-size: 20px;
+  top: 18px;
+}
+/*带有 icon 和辅助性文字介绍,加上class='alert-big'*/
+.alert-big .el-alert__title{
+  margin-bottom: 14px;
+}
+.el-alert__icon.is-big{
+  top: 24px;
+}
+
+
+/*开关*/
+.el-switch__label * {
+  font-size: 20px;
+}
+
+.el-switch__core {
+  width: 60px;
+}
+
+.el-tag {
+  font-size: 16px;
+  padding: 0 15px;
+  height: 30px;
+}
+
+/*页签通用样式*/
+.el-tabs__item {
+  font-size: 20px;
+  padding: 0 15px;
+  height: 54px;
+  line-height: 54px;
+}
+
+.el-tabs__content {
+  font-size: 20px;
+}
+
+/*页签,选项卡样式,在type="card"的基础上设置class="el-tabs-card-margin"*/
+.el-tabs-card-margin.el-tabs--card > .el-tabs__header .el-tabs__item {
+  border: 1px solid #e4e7ed;
+  border-radius: 4px 4px 0 0;
+}
+
+.el-tabs-card-margin.el-tabs--card .el-tabs__item {
+  margin-left: 10px;
+  font-size: 20px;
+}
+
+.el-tabs-card-margin.el-tabs--card > .el-tabs__header .el-tabs__item:first-child {
+  margin-left: 0;
+}
+
+.el-tabs-card-margin.el-tabs--card > .el-tabs__header .el-tabs__nav {
+  border-top: none;
+  border-right: none;
+}
+
+.el-tabs-card-margin.el-tabs--card > .el-tabs__header .el-tabs__item.is-active {
+  border-bottom-color: #fff;
+}
+
+.el-tabs-card-margin .el-tabs__item.is-active {
+  font-weight: bold;
+}
+
+/*单选按钮*/
+.el-radio-button__inner {
+  font-size: 20px;
+  padding: 16px 15px;
+}
+
+/*定长的单选按钮,有间距，有边框，加上class="border"*/
+.el-radio-button.border .el-radio-button__inner {
+  width: 180px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+}
+
+.el-radio-button.border {
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+
+.el-radio-button.border:first-child .el-radio-button__inner {
+  border-radius: 4px;
+}
+
+.el-radio-button.border.is-active .el-radio-button__inner {
+  border-left: none;
+}
+
+.el-radio-button.border.is-focus .el-radio-button__inner {
+  border-left: none;
+}
+
+/*导航*/
+.el-menu-item {
+  font-size: 20px;
+}
+
+/*对话框*/
+.el-dialog{
+  border-radius: 4px;
+  width: 51%;
+}
+.el-dialog__title{
+  font-size: 20px;
+  font-weight: bold;
+}
+.el-scrollbar__wrap{
+  overflow-x: hidden;
+}
+.el-dialog__body{
+  padding: 40px 20px 60px 20px;
+  font-size: 20px;
+  line-height: 32px;
+}
+.el-dialog__header{
+  padding: 40px 20px;
+  border-bottom: 1px solid #dcdfe6;
+}
