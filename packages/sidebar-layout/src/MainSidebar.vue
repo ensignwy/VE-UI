@@ -7,14 +7,14 @@
         <template v-if="item.children">
           <el-submenu :index="item.code">
             <template slot="title"><i class="el-icon-menu"></i><span>{{item.title}}</span></template>
-            <el-menu-item v-for="(child,i) in item.children" :key="i" :index="child.code" route="/">
+            <el-menu-item v-for="(child,i) in item.children" :key="i" :index="child.code" :route="child.href">
               <i class="el-icon-menu"></i>
               <span>{{child.title}}</span>
             </el-menu-item>
           </el-submenu>
         </template>
         <template v-else>
-          <el-menu-item :index="item.code" route="/">
+          <el-menu-item :index="item.code" :route="item.href">
             <i class="el-icon-menu"></i>
             <span>{{item.title}}</span>
           </el-menu-item>

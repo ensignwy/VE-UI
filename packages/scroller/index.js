@@ -1,7 +1,7 @@
-import EScroller from './src/Scroller'
+import VeScroller from './src/Scroller'
 
-EScroller.install = function (Vue) {
-  Vue.component(EScroller.name, EScroller)
+VeScroller.install = function (Vue) {
+  Vue.component(VeScroller.name, VeScroller)
 }
 
-export default EScroller
+export default VeScroller

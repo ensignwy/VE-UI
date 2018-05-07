@@ -1,0 +1,47 @@
+{
+  "开发指南": [
+    {
+      "name": "giud",
+      "path": "/giud",
+      "desc": "介绍"
+    },
+    {
+      "name": "install",
+      "path": "/install",
+      "desc": "安装"
+    },
+    {
+      "name": "start",
+      "path": "/start",
+      "desc": "快速开始"
+    },
+    {
+      "name": "Index",
+      "path": "/",
+      "type": "pages"
+    },
+    {
+      "name": "logs",
+      "path": "/logs",
+      "desc": "更新日志"
+    }
+  ],
+  "组件": [
+    {
+      "desc": "视图组件",
+      "path": "/component",
+      "items": [
+        {
+          "desc": "Switcher 点击切换选择",
+          "name": "switcher",
+          "path": "/switcher"
+        },
+        {
+          "desc": "Swiper 滑动切换轮播组件",
+          "name": "swiper",
+          "path": "/swiper"
+        }
+      ]
+    }
+  ]
+}

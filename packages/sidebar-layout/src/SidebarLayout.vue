@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <main-header></main-header>
+    <main-header :header-props="headerProps"></main-header>
     <div class="content-wrapper">
       <main-sidebar :menus="menus"></main-sidebar>
       <div class="content" :class="isCollapse?'content-expanded':'content-collapsed'">
@@ -18,7 +18,7 @@
 
   export default {
     name: 'SidebarLayout',
-    props:['menus'],
+    props:['menus','headerProps'],
     data() {
       return {
         isCollapse: false
@@ -52,8 +52,8 @@
   }
 
   .wrapper .content-wrapper .content {
-
-    padding: 10px;
+    padding: 0 15px 15px 15px;
+    background-color: #EDF0F5;
     text-align: left;
     transition: all 0.3s ease 0s;
   }

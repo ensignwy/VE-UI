@@ -3,6 +3,7 @@ const path = require('path')
 const config = require('../config')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const packageConfig = require('../package.json')
+const glob = require('glob')
 
 exports.assetsPath = function (_path) {
   const assetsSubDirectory = process.env.NODE_ENV === 'production'
@@ -98,4 +99,43 @@ exports.createNotifierCallback = () => {
       icon: path.join(__dirname, 'logo.png')
     })
   }
+}
+
+//获取多级的入口文件
+exports.getMultiEntry = function (globPath) {
+  var entries = {},
+    basename, tmp, pathname;
+
+  glob.sync(globPath).forEach(function (entry) {
+    basename = path.basename(entry, path.extname(entry));
+    tmp = entry.split('/').splice(-4);
+
+    var pathsrc = tmp[0]+'/'+tmp[1];
+    if( tmp[0] == 'src' ){
+      pathsrc = tmp[1];
+    }
+    //console.log(pathsrc)
+    pathname = pathsrc + '/' + basename; // 正确输出js和html的路径
+    entries[pathname] = entry;
+    //console.log(pathname+'-----------'+entry);
+  });
+
+  return entries;
+}
+
+/**
+ * 增加 hljs 的 classname
+ */
+exports.wrapCustomClass = function (render) {
+  return function (...args) {
+    return render(...args)
+      .replace('<code class="', '<code class="hljs ')
+      .replace('<code>', '<code class="hljs">')
+  }
+}
+/**
+ * Format HTML string
+ */
+exports.convertHtml = function (str) {
+  return str.replace(/(&#x)(\w{4});/gi, $0 => String.fromCharCode(parseInt(encodeURIComponent($0).replace(/(%26%23x)(\w{4})(%3B)/g, '$2'), 16)))
 }

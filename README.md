@@ -1,6 +1,7 @@
 # ve-ui
 
-> A Vue.js project
+> 基于vue2.x的前端组件库
+>
 
 ## Build Setup
 
@@ -26,5 +27,21 @@ npm run e2e
 # run all tests
 npm test
 ```
+运行起来可以查看文档
+http://localhost:8080
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+# 作为其他项目的依赖库使用
+## 安装
+
+``` bash
+npm install git+https://github.com/ensignwy/VE-UI.git
+```
+
+## 使用
+``` bash
+import VeUI from 've-ui' // 引入组件库
+import 've-ui/packages/theme/touch-screen-global.css' // 如果是触摸屏，引入触摸屏样式库
+Vue.use(VeUI)
+```
+
+

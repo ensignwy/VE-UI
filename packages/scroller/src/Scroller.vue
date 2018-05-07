@@ -178,7 +178,7 @@
   }
 
   export default {
-    name:'EScroller',
+    name:'VeScroller',
     components: {
       Spinner,
       Arrow

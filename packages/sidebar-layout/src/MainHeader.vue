@@ -1,6 +1,6 @@
 <template>
   <header class="header">
-    <div class="logo" :class="isCollapse?'logo-collapse-width':'logo-width'">{{isCollapse?'Admin':'后台管理系统'}}</div>
+    <div class="logo" :class="isCollapse?'logo-collapse-width':'logo-width'">{{isCollapse?headerProps.shortName:headerProps.name}}</div>
     <div class="tools" @click.prevent="collapse">
       <i class="el-icon-minus"></i>
     </div>
@@ -8,10 +8,10 @@
       <el-dropdown trigger="hover">
         <span class="el-dropdown-link">
           <img class="user-logo" src="../../../static/images/1.jpg" alt="">
-          你好,{{username}}
+          你好,{{headerProps.username}}
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native>修改密码</el-dropdown-item>
+          <el-dropdown-item @click.native="profile">修改密码</el-dropdown-item>
           <el-dropdown-item @click.native="logout">退出</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -20,29 +20,47 @@
 </template>
 <script>
   import Bus from './bus'
+  import http from 'axios'
 
   export default {
-    data () {
+    props:{
+      headerProps: {
+        default() {
+          return {
+            username: 'ensign',
+            name: '后台管理系统',
+            shortName: 'Admin'
+          };
+        }
+      },
+    },
+    data() {
       return {
-        name: 'ensign',
         isCollapse: false
       }
     },
     computed: {
-      username () {
-        let username = localStorage.getItem('username')
-        return username ? username : this.name
-      }
+
     },
     methods: {
+      // 修改密码
+      profile: function () {
+        this.$router.push('/profile')
+      },
       // 退出登录
       logout: function () {
         var vm = this
         this.$confirm('确认退出吗？', '提示', {
           // type: 'warning'
         }).then(() => {
-          localStorage.removeItem('user')
-          vm.$router.push('/login')
+          localStorage.removeItem('access_token')
+          localStorage.removeItem('username')
+
+          var loginUrl = '/account/logout';
+          http.get(loginUrl).then(function (response) {
+            vm.$router.push('/login')
+          });
+
         }).catch(() => {
 
         })
