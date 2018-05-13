@@ -1,56 +1,79 @@
 # Swiper 滑动切换
+参考https://github.com/helicopters/wc-swiper，原版本为v1.x的，现改为vue2.x版本
 ----
-### 基础用法 
-滑动效果请打开浏览器手机版查看
+### 基础用法
 
-<div style="width: 320px;height: 380px">
-  <ve-swiper :sum="3">
-    <div class="swiper-item">
-      1
-    </div>
-    <div class="swiper-item">
-      2
-    </div>
-    <div class="swiper-item">
-      3
-    </div>
-  </ve-swiper>
-</div>
+<ve-swiper id="swiper_loop"
+        :loop="true"
+        :pagination-visible="true"
+        direction="horizontal">
+    <div>Page 1</div>
+    <div>Page 3</div>
+    <div>Page 3</div>
+</ve-swiper>
 
 
 ::: demo
 ```html
 
-<div style="width: 320px;height: 380px">
-  <ve-swiper :sum="3">
-    <div class="swiper-item">
-      1
-    </div>
-    <div class="swiper-item">
-      2
-    </div>
-    <div class="swiper-item">
-      3
-    </div>
-  </ve-swiper>
-</div>
+<ve-swiper id="swiper_loop"
+        :loop="true"
+        :pagination-visible="true"
+        direction="horizontal">
+    <div>Page 1</div>
+    <div>Page 3</div>
+    <div>Page 3</div>
+</ve-swiper>
 <style>
-.swiper-item {
-    background-color: #eee;
-    width: 320px;
-    height: 320px;
-  }
+.swiper {
+    height: 200px;
+    margin-bottom: 80px;
+}
+.swiper-wrap > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 48px;
+    color: #fff;
+}
+.swiper-wrap > div:nth-child(3n) {
+    background-color: skyblue;
+}
+.swiper-wrap > div:nth-child(3n + 1) {
+    background-color: yellowgreen;
+}
+.swiper-wrap > div:nth-child(3n + 2) {
+    background-color: rosybrown;
+}
 </style>
 
 ```
 :::
 
 <style>
-.swiper-item {
-    background-color: #fff;
-    width: 320px;
-    height: 320px;
-  }
+.swiper {
+    height: 200px;
+    margin-bottom: 80px;
+}
+.swiper-wrap > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 48px;
+    color: #fff;
+}
+.swiper-wrap > div:nth-child(3n) {
+    background-color: skyblue;
+}
+.swiper-wrap > div:nth-child(3n + 1) {
+    background-color: yellowgreen;
+}
+.swiper-wrap > div:nth-child(3n + 2) {
+    background-color: rosybrown;
+}
+
 </style>
 
 
@@ -58,7 +81,6 @@
 export default {
   data() {
     return {
-      content: ''
     };
   }
 }
@@ -69,8 +91,6 @@ export default {
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| sum | 轮播div个数（必填） | Number | — | — |
-| autopaly| 是否自动轮播 | Boolean | — | false |
 
 
 

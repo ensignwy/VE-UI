@@ -1,158 +1,245 @@
 <template>
-  <div class="swiper" ref="swiper">
-    <div class="swiper-list"
-         :style="{width: swiperListWidth + 'px', transform: 'translateX(' + translateX + 'px)', transitionDuration: transitionDuration + 's' }"
-         ref="swiperList">
+  <div class="swiper"
+       :class="[direction, {'dragging': dragging}]"
+       @touchstart="_onTouchStart"
+       @mousedown="_onTouchStart"
+       @wheel="_onWheel">
+    <div class="swiper-wrap"
+         ref="swiperWrap"
+         :style="{
+                'transform' : 'translate3d(' + translateX + 'px,' + translateY + 'px, 0)',
+                'transition-duration': transitionDuration + 'ms'
+             }"
+         @transitionend="_onTransitionEnd">
       <slot></slot>
     </div>
-    <div class="dot">
-      <span v-for="(x, i) in sum" :key="'dot' + x" :class="{'on': i === index}"></span>
+    <div class="swiper-pagination"
+         v-show="paginationVisible">
+            <span class="swiper-pagination-bullet"
+                  :class="{'active': $index+1===currentPage}"
+                  v-for="(slide,$index) in slideEls"
+                  @click="paginationClickable && setPage($index+1)"></span>
     </div>
   </div>
 </template>
-<script>
+<style lang="less" src="./swiper.less"></style>
+<script type="text/babel">
+  const VERTICAL = 'vertical';
+  const HORIZONTAL = 'horizontal';
   export default {
     name: 'VeSwiper',
-    data() {
-      return {
-        swiperWidth: '', // 轮播图盒子的宽度
-        index: 0, // 轮播图序号
-        transitionDuration: 0.5, // 切换动画时长
-        timer: '', // 定时器
-        startX: '', // touchstart的起始x坐标
-        offset: '' // move偏移值
-      }
-    },
     props: {
-      // 我在这里设置了必填的一个属性，为了不去计算轮播图的总数量
-      sum: {
-        type: Number,
-        required: true
+      direction: {
+        type: String,
+        default: VERTICAL,
+        validator: (value) => [VERTICAL, HORIZONTAL].indexOf(value) > -1
       },
-      time: {
-        type: Number,
-        default: 3000
+      mousewheelControl: {
+        type: Boolean,
+        default: true
       },
-      autoplay: {
+      performanceMode: {
         type: Boolean,
         default: false
-      }
-    },
-    computed: {
-      // 轮播图列表的宽度
-      swiperListWidth() {
-        return this.swiperWidth * this.sum
       },
-      // 轮播图列表偏移值
-      translateX() {
-        return this.index * this.swiperWidth * -1
+      paginationVisible: {
+        type: Boolean,
+        default: false
+      },
+      paginationClickable: {
+        type: Boolean,
+        default: false
+      },
+      loop: {
+        type: Boolean,
+        default: false
+      },
+      speed: {
+        type: Number,
+        default: 500
       }
     },
-    created() {
-      this.$nextTick(() => {
-        let swiper = this.$refs.swiper
-        // 为什么不取屏幕宽度，是因为通用性，由外部的盒子决定轮播图的宽
-        this.swiperWidth = swiper.offsetWidth
-        if(this.autoplay){
-          this.autoPlay()
-        }
-
-        // addEventListener不可以用匿名函数，因为无法解除绑定
-        swiper.addEventListener('touchstart', this.touchStart)
-        swiper.addEventListener('touchmove', this.touchMove)
-        swiper.addEventListener('touchend', this.touchEnd)
-      })
+    data() {
+      return {
+        currentPage: 1,
+        lastPage: 1,
+        translateX: 0,
+        translateY: 0,
+        startTranslate: 0,
+        delta: 0,
+        dragging: false,
+        startPos: null,
+        transitioning: false,
+        slideEls: [],
+        translateOffset: 0,
+        transitionDuration: 0
+      };
+    },
+    mounted() {
+      this._onTouchMove = this._onTouchMove.bind(this);
+      this._onTouchEnd = this._onTouchEnd.bind(this);
+      this.slideEls = [].map.call(this.$refs.swiperWrap.children, el => el);
+      if (this.loop) {
+        this.$nextTick(function () {
+          this._createLoop();
+          this.setPage(this.currentPage, true);
+        });
+      } else {
+        this.setPage(this.currentPage);
+      }
     },
     methods: {
-      autoPlay() {
-        this.timer = setInterval(() => {
-          let index = this.index + 1
-          // 取余数运算，0%5=0，1%5=1，5%5=0，当然用if判断语句也是可以的
-          this.index = index % this.sum
-        }, this.time)
-      },
-      touchStart(e) {
-        this.transitionDuration = 0
-        clearInterval(this.timer)
-        // 只记录第一根手指触发的值
-        this.startX = e.targetTouches[0].clientX
-      },
-      touchMove(e) {
-        this.offset = this.startX - e.targetTouches[0].clientX
-        this.$refs.swiperList.style.transform = `translateX(${this.translateX - this.offset}px)`
-      },
-      touchEnd(e) {
-        this.transitionDuration = 0.5
-        // 计算偏移值四舍五入，如果拖动距离大于等于0.5则换一张轮播图
-        let num = Math.round(this.offset / this.swiperWidth)
-        let sum = this.index + num
-        // 先计算再赋值给this.index避免重复触发计算属性，为什么这里不取余数，是因为又负数出现
-        if (sum > this.sum - 1) {
-          sum = 0
-        } else if (sum < 0) {
-          sum = this.sum - 1
-        }
-        // 解决拖动距离小于一半，index值无变化，无法触发计算属性，主动还原偏移值
-        if (sum === this.index) {
-          this.$refs.swiperList.style.transform = `translateX(${this.translateX}px)`
+      next() {
+        var page = this.currentPage;
+        if (page < this.slideEls.length || this.loop) {
+          this.setPage(page + 1);
         } else {
-          this.index = sum
+          this._revert();
         }
-        if (this.autoplay){
-          this.autoPlay()
+      },
+      prev() {
+        var page = this.currentPage;
+        if (page > 1 || this.loop) {
+          this.setPage(page - 1);
+        } else {
+          this._revert();
         }
+      },
+      setPage(page, noAnimation) {
+        var self = this;
+        this.lastPage = this.currentPage;
+        if (page === 0) {
+          this.currentPage = this.slideEls.length;
+        } else if (page === this.slideEls.length + 1) {
+          this.currentPage = 1;
+        } else {
+          this.currentPage = page;
+        }
+        if (this.loop) {
+          if (this.delta === 0) {
+            this._setTranslate(self._getTranslateOfPage(this.lastPage));
+          }
+          setTimeout(function () {
+            self._setTranslate(self._getTranslateOfPage(page));
+            if (noAnimation) return;
+            self._onTransitionStart();
+          }, 0);
+        } else {
+          this._setTranslate(this._getTranslateOfPage(page));
+          if (noAnimation) return;
+          this._onTransitionStart();
+        }
+      },
+      isHorizontal() {
+        return this.direction === HORIZONTAL;
+      },
+      isVertical() {
+        return this.direction === VERTICAL;
+      },
+      _onTouchStart(e) {
+        this.startPos = this._getTouchPos(e);
+        this.delta = 0;
+        this.startTranslate = this._getTranslateOfPage(this.currentPage);
+        this.startTime = new Date().getTime();
+        this.dragging = true;
+        this.transitionDuration = 0;
+        document.addEventListener('touchmove', this._onTouchMove, false);
+        document.addEventListener('touchend', this._onTouchEnd, false);
+        document.addEventListener('mousemove', this._onTouchMove, false);
+        document.addEventListener('mouseup', this._onTouchEnd, false);
+      },
+      _onTouchMove(e) {
+        this.delta = this._getTouchPos(e) - this.startPos;
+        if (!this.performanceMode) {
+          this._setTranslate(this.startTranslate + this.delta);
+          this.$emit('slider-move', this._getTranslate());
+        }
+        if (this.isVertical() || this.isHorizontal() && Math.abs(this.delta) > 0) {
+          e.preventDefault();
+        }
+      },
+      _onTouchEnd(e) {
+        this.dragging = false;
+        this.transitionDuration = this.speed;
+        var isQuickAction = new Date().getTime() - this.startTime < 1000;
+        if (this.delta < -100 || (isQuickAction && this.delta < -15)) {
+          this.next();
+        } else if (this.delta > 100 || (isQuickAction && this.delta > 15)) {
+          this.prev();
+        } else {
+          this._revert();
+        }
+        document.removeEventListener('touchmove', this._onTouchMove);
+        document.removeEventListener('touchend', this._onTouchEnd);
+        document.removeEventListener('mousemove', this._onTouchMove);
+        document.removeEventListener('mouseup', this._onTouchEnd);
+      },
+      _onWheel(e) {
+        if (this.mousewheelControl) {
+          // TODO Support apple magic mouse and trackpad.
+          if (!this.transitioning) {
+            if (e.deltaY > 0) {
+              this.next();
+            } else {
+              this.prev();
+            }
+          }
+          if (this._isPageChanged()) e.preventDefault();
+        }
+      },
+      _revert() {
+        this.setPage(this.currentPage);
+      },
+      _getTouchPos(e) {
+        var key = this.isHorizontal() ? 'pageX' : 'pageY';
+        return e.changedTouches ? e.changedTouches[0][key] : e[key];
+      },
+      _onTransitionStart() {
+        this.transitioning = true;
+        this.transitionDuration = this.speed;
+        if (this._isPageChanged()) {
+          this.$emit('slide-change-start', this.currentPage);
+        } else {
+          this.$emit('slide-revert-start', this.currentPage);
+        }
+      },
+      _onTransitionEnd() {
+        this.transitioning = false;
+        this.transitionDuration = 0;
+        this.delta = 0;
+        if (this._isPageChanged()) {
+          this.$emit('slide-change-end', this.currentPage);
+        } else {
+          this.$emit('slide-revert-end', this.currentPage);
+        }
+      },
+      _isPageChanged() {
+        return this.lastPage !== this.currentPage;
+      },
+      _setTranslate(value) {
+        var translateName = this.isHorizontal() ? 'translateX' : 'translateY';
+        this[translateName] = value;
+      },
+      _getTranslate(){
+        var translateName = this.isHorizontal() ? 'translateX' : 'translateY';
+        return this[translateName];
+      },
+      _getTranslateOfPage(page) {
+        if (page === 0) return 0;
+        var propName = this.isHorizontal() ? 'clientWidth' : 'clientHeight';
+        return -[].reduce.call(this.slideEls, function (total, el, i) {
+            return i > page - 2 ? total : total + el[propName];
+          }, 0) + this.translateOffset;
+      },
+      _createLoop() {
+        var propName = this.isHorizontal() ? 'clientWidth' : 'clientHeight';
+        var swiperWrapEl = this.$refs.swiperWrap;
+        var duplicateFirstChild = swiperWrapEl.firstElementChild.cloneNode(true);
+        var duplicateLastChild = swiperWrapEl.lastElementChild.cloneNode(true);
+        swiperWrapEl.insertBefore(duplicateLastChild, swiperWrapEl.firstElementChild);
+        swiperWrapEl.appendChild(duplicateFirstChild);
+        this.translateOffset = -duplicateLastChild[propName];
       }
-    },
-    // 实例销毁之前，移除绑定事件
-    beforeDestroy() {
-      let swiper = this.$refs.swiper
-      swiper.removeEventListener('touchstart', this.touchStart)
-      swiper.removeEventListener('touchmove', this.touchMove)
-      swiper.removeEventListener('touchend', this.touchEnd)
     }
-  }
+  };
 </script>
-
-<style>
-  .swiper {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .swiper-list {
-    display: flex;
-    transition-property: all;
-    transition-timing-function: cubic-bezier(0.18, 0.89, 0.32, 1.28);
-  }
-
-  .swiper-item {
-    width: 100%;
-  }
-
-  img {
-    display: block;
-  }
-
-  .dot {
-    display: flex;
-    width: 100%;
-    margin-top: 10px;
-    justify-content: center;
-  }
-
-  .dot span {
-    width: 8px;
-    height: 8px;
-
-    background-color: #D5DBE0;
-    border-radius: 50%;
-  }
-
-  .dot .on {
-    background-color: #409eff;
-  }
-
-  .dot span {
-    margin-left: 8px;
-  }
-</style>
